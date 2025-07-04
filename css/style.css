@@ -587,6 +587,18 @@ section {
 }
 
 /* ------------------- */
+/* MENSAGEM DE ERRO    */
+/* ------------------- */
+.error-message {
+  color: #fca5a5; /* Vermelho claro */
+  font-size: 0.875rem;
+  text-align: left;
+  margin-top: -0.5rem;
+  margin-bottom: 1rem;
+  display: none; /* Começa escondido */
+}
+
+/* ------------------- */
 /* MEDIA QUERIES (RESPONSIVIDADE) */
 /* ------------------- */
 @media (min-width: 768px) {

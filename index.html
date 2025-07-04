@@ -7,19 +7,22 @@
   <!-- Título da Página -->
   <title>A Reunião Secreta - Sua Rotina de Faturamento Começa Aqui</title>
 
-  <!-- SEO Meta Tags -->
+  <!-- SEO e Open Graph Meta Tags -->
   <meta name="description" content="Descubra o método para transformar licitações em faturamento previsível e vença seu primeiro edital em 30 dias com o Dr. Alberto Machado.">
   <meta name="keywords" content="licitação, faturamento, empreender, Dr. Alberto Machado, curso de licitação, nova lei de licitações">
-
-  <!-- Open Graph Meta Tags (para Redes Sociais) -->
   <meta property="og:title" content="A Reunião Secreta - Sua Rotina de Faturamento Começa Aqui">
   <meta property="og:description" content="Transforme licitações em faturamento previsível e vença seu primeiro edital em 30 dias.">
   <meta property="og:image" content="https://placehold.co/1200x630/0f172a/f97316?text=Empreender+e+Licitar">
   <meta property="og:url" content="URL_DA_SUA_PAGINA_QUANDO_ESTIVER_ONLINE">
   <meta property="og:type" content="website">
 
-  <!-- Favicon (ícone da aba) -->
+  <!-- Favicon -->
   <link rel="icon" href="https://placehold.co/32x32/f97316/ffffff?text=EL" type="image/png">
+
+  <!-- Otimização de Fontes -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Biblioteca de Animação (AOS) -->
   <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
@@ -29,6 +32,7 @@
 </head>
 <body>
 
+  <!-- O restante do seu body continua igual... -->
   <header class="site-header">
     <div class="container">
       <h2 class="header-title">Dr. Alberto Machado | Empreender e Licitar</h2>
@@ -149,13 +153,16 @@
   </footer>
 
   <!-- Modal de Captura de Telefone -->
-  <div id="phone-modal" class="modal-overlay">
+  <!-- Adicionado role="dialog" e aria-modal="true" para acessibilidade -->
+  <div id="phone-modal" class="modal-overlay" role="dialog" aria-modal="true">
     <div class="modal-container">
-      <button id="close-modal" class="close-button">&times;</button>
+      <button id="close-modal" class="close-button" aria-label="Fechar modal">&times;</button>
       <h3>Quase lá!</h3>
       <p>Deixe seu melhor número de telefone com DDD para receber o acesso à comunidade.</p>
-      <form id="phone-form">
+      <form id="phone-form" novalidate>
         <input type="tel" id="phone-input" placeholder="(XX) XXXXX-XXXX" required>
+        <!-- Adicionado container para a mensagem de erro -->
+        <div id="error-message" class="error-message"></div>
         <button type="submit" class="submit-button">Entrar para a Comunidade</button>
       </form>
     </div>
