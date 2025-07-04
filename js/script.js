@@ -2,77 +2,96 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   // Inicializa a biblioteca de animações (AOS)
-  // doc: https://github.com/michalsnik/aos
   AOS.init({
-    duration: 800, // Duração da animação em ms
-    once: true,    // Animar elementos apenas uma vez
-    offset: 100,   // "Gatilho" da animação um pouco antes de o elemento aparecer
+    duration: 800,
+    once: true,
+    offset: 100,
   });
 
   // --- LÓGICA DO MODAL ---
 
-  // Seleciona os elementos do DOM necessários para o modal
   const ctaButton = document.getElementById('cta-button');
   const modalOverlay = document.getElementById('phone-modal');
   const closeModalButton = document.getElementById('close-modal');
   const phoneForm = document.getElementById('phone-form');
   const phoneInput = document.getElementById('phone-input');
 
-  // URL para onde o usuário será redirecionado
-  // IMPORTANTE: Substitua pela URL real da sua comunidade
+  // --- CONFIGURAÇÃO DA INTEGRAÇÃO ---
+
+  // 1. URL do Webhook do seu fluxo no n8n
+  // IMPORTANTE: Substitua pela URL real do seu Webhook
+  const n8nWebhookUrl = 'URL_DO_SEU_WEBHOOK_N8N_AQUI';
+
+  // 2. URL para onde o usuário será redirecionado APÓS o sucesso
   const communityRedirectURL = 'https://chat.whatsapp.com/SUA_COMUNIDADE_AQUI';
 
-  // Função para abrir o modal
-  const openModal = () => {
-    modalOverlay.classList.add('active');
-  };
+  // --- FUNÇÕES DO MODAL ---
 
-  // Função para fechar o modal
-  const closeModal = () => {
-    modalOverlay.classList.remove('active');
-  };
+  const openModal = () => modalOverlay.classList.add('active');
+  const closeModal = () => modalOverlay.classList.remove('active');
 
-  // Adiciona o evento de clique ao botão principal de CTA
   ctaButton.addEventListener('click', (event) => {
-    event.preventDefault(); // Impede que o link "#" mude a URL
+    event.preventDefault();
     openModal();
   });
 
-  // Adiciona o evento de clique ao botão de fechar do modal
   closeModalButton.addEventListener('click', closeModal);
 
-  // Adiciona o evento de clique ao fundo do modal para fechá-lo
   modalOverlay.addEventListener('click', (event) => {
-    // Fecha o modal apenas se o clique for no overlay (fundo) e não no container
     if (event.target === modalOverlay) {
       closeModal();
     }
   });
 
-  // Adiciona o evento de submissão ao formulário do modal
-  phoneForm.addEventListener('submit', (event) => {
+  // --- LÓGICA DE ENVIO PARA O N8N ---
+
+  phoneForm.addEventListener('submit', async (event) => {
     event.preventDefault(); // Impede o recarregamento da página
-    
+
     const phoneNumber = phoneInput.value;
     const submitButton = phoneForm.querySelector('.submit-button');
 
-    // Simples validação para garantir que o campo não está vazio
-    if (phoneNumber.trim() === '') {
-      alert('Por favor, preencha seu número de telefone.');
+    // Validação simples
+    if (phoneNumber.trim().length < 10) { // Verifica um mínimo de caracteres
+      alert('Por favor, preencha um número de telefone válido com DDD.');
       return;
     }
 
     // Feedback visual para o usuário
-    submitButton.textContent = 'Redirecionando...';
+    submitButton.textContent = 'Enviando...';
     submitButton.disabled = true;
 
-    // AQUI: Você poderia enviar o 'phoneNumber' para uma API, Google Sheets, etc.
-    // Ex: sendToAPI(phoneNumber);
+    try {
+      // Envia os dados para o webhook do n8n usando a API Fetch
+      const response = await fetch(n8nWebhookUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // Envia o telefone dentro de um objeto JSON
+        body: JSON.stringify({
+          phone: phoneNumber
+        }),
+      });
 
-    // Aguarda um pouco para o usuário ver a mensagem e então redireciona
-    setTimeout(() => {
+      // Se a resposta do n8n não for bem-sucedida (ex: erro no fluxo), lança um erro
+      if (!response.ok) {
+        throw new Error(`Erro na comunicação com o servidor: ${response.statusText}`);
+      }
+
+      // Se tudo correu bem, o n8n já executou a automação.
+      // Agora, podemos redirecionar o usuário.
+      submitButton.textContent = 'Redirecionando...';
       window.location.href = communityRedirectURL;
-    }, 1500); // Atraso de 1.5 segundos
+
+    } catch (error) {
+      console.error('Erro ao enviar para o webhook do n8n:', error);
+      alert('Ocorreu um erro ao processar sua solicitação. Por favor, tente novamente em instantes.');
+      
+      // Reabilita o botão para que o usuário possa tentar novamente
+      submitButton.textContent = 'Entrar para a Comunidade';
+      submitButton.disabled = false;
+    }
   });
 
 });
